@@ -12,3 +12,5 @@ Dockerfile included ...
 
 
 
+todo
+add versions of api maybe
