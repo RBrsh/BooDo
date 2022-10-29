@@ -23,6 +23,10 @@ def get_todos(db: Session, limit: int = 100):
     return db.query(models.ToDo).limit(limit).all()
 
 
+def get_todo_by_id(db: Session, todo_id: int):
+    return db.query(models.ToDo).filter(models.ToDo.id == todo_id).one()
+
+
 def get_todos_overdue(db: Session, limit: int = 100):
     return db.query(models.ToDo).\
         filter(models.ToDo.date_due <= date.today(),

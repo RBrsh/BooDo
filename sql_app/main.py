@@ -37,3 +37,9 @@ def get_todos(db: Session = Depends(get_db)):
 @boo_do.put("/todos/done", response_model=list[int])
 def update_todos_done(todo_ids: list[int], db: Session = Depends(get_db)):
     return crud.update_todos_done(db=db, todo_ids=todo_ids)
+
+
+@boo_do.get("/todos/{todo_id}", response_model=list[schemas.ToDo])
+def get_todos(todo_id, db: Session = Depends(get_db)):
+    item = crud.get_todo_by_id(db, todo_id)
+    return [item]

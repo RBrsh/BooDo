@@ -18,6 +18,7 @@ class ToDo(ToDoBase):
     is_completed: bool
     date_completed: date | None
     date_due: date | None
+    date_created: date
 
     class Config:
         orm_mode = True
