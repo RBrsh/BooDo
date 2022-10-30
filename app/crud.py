@@ -43,3 +43,9 @@ def update_todos_done(db: Session, todo_ids: list[int]):
         updated_todo_ids.append(item.id)
     db.commit()
     return updated_todo_ids
+
+
+def delete_todo(db: Session, todo_id: int):
+    deleted = db.query(models.ToDo).filter(models.ToDo.id == todo_id).delete()
+    db.commit()
+    return deleted

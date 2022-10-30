@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Response, status
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
@@ -29,17 +29,25 @@ def get_todos(db: Session = Depends(get_db)):
 
 
 @boo_do.get("/todos/overdue", response_model=list[schemas.ToDo])
-def get_todos(db: Session = Depends(get_db)):
+def get_todos_overdue(db: Session = Depends(get_db)):
     items = crud.get_todos_overdue(db)
     return items
 
 
-@boo_do.put("/todos/done", response_model=list[int])
+@boo_do.put("/todos/done")
 def update_todos_done(todo_ids: list[int], db: Session = Depends(get_db)):
-    return crud.update_todos_done(db=db, todo_ids=todo_ids)
+    r = crud.update_todos_done(db=db, todo_ids=todo_ids)
+    return Response(status_code=status.HTTP_200_OK)
 
 
 @boo_do.get("/todos/{todo_id}", response_model=list[schemas.ToDo])
-def get_todos(todo_id, db: Session = Depends(get_db)):
+def get_todo(todo_id: int, db: Session = Depends(get_db)):
     item = crud.get_todo_by_id(db, todo_id)
     return [item]
+
+
+@boo_do.delete("/todos/{todo_id}")
+def delete_todo(todo_id: int, db: Session = Depends(get_db)):
+    if not crud.delete_todo(db, todo_id):
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
+    return Response(status_code=status.HTTP_200_OK)

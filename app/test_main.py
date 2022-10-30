@@ -1,5 +1,5 @@
 import json
-import datetime
+from datetime import datetime, date
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from .database import Base
 from .main import boo_do, get_db
+from . import models
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
@@ -15,7 +16,6 @@ engine = create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False,
                                    bind=engine)
-
 
 Base.metadata.create_all(bind=engine)
 
@@ -35,6 +35,8 @@ client = TestClient(boo_do)
 
 def test_create_todos():
     json_headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    date_format = "%Y-%m-%d"
+    test_date = date.today()
     payload = [
         {
             "title": "Test Task 1",
@@ -46,7 +48,7 @@ def test_create_todos():
         {
             "title": "Test Task 3",
             "description": "Desc3",
-            "date_due": datetime.date.today().strftime("%Y-%m-%d"),
+            "date_due": test_date.strftime(date_format),
         },
         {
             "title": "Test Task 2",
@@ -54,6 +56,15 @@ def test_create_todos():
             "is_completed": False
         }
     ]
+    # Defaults for empty or absent keys in payload that must be
+    # filled in when creating the record in dB:
+    defaults = {
+        "description": None,
+        "date_created": test_date,
+        "is_completed": False,
+        "date_due": None,
+    }
+
     response = client.post("/todos/", data=json.dumps(payload),
                            headers=json_headers)
 
@@ -62,6 +73,22 @@ def test_create_todos():
     data = response.json()
     assert len(data) == len(payload)
 
+    # Check stored data in the DB directly:
+    local_db = TestingSessionLocal()
+    for i, v in enumerate(data):
+        # Create dict filled with values from payload and defaults:
+        filled = defaults.copy()
+        filled.update(payload[i])
+
+        t = local_db.query(models.ToDo).filter(models.ToDo.id == v).one()
+
+        if "date_due" in filled.keys() and filled["date_due"]:
+            filled["date_due"] = datetime.strptime(filled["date_due"],
+                                                   date_format).date()
+
+        for k in filled.keys():
+            assert filled[k] == getattr(t, k)
+
 
 def test_create_todos_invalid():
     pass
@@ -69,7 +96,7 @@ def test_create_todos_invalid():
 
 def test_read_todos():
     json_headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    test_date = datetime.date.today().strftime("%Y-%m-%d")
+    test_date = date.today().strftime("%Y-%m-%d")
     payload = [
         {
             "title": "Test Task 1",
