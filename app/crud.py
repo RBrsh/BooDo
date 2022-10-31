@@ -1,5 +1,6 @@
 from datetime import date
 
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -29,8 +30,9 @@ def get_todo_by_id(db: Session, todo_id: int):
 
 def get_todos_overdue(db: Session, limit: int = 100):
     return db.query(models.ToDo).\
-        filter(models.ToDo.date_due <= date.today(),
-               models.ToDo.is_completed is False
+        filter(and_(models.ToDo.date_due,
+                    models.ToDo.date_due < date.today(),
+                    models.ToDo.is_completed == False)
                ).limit(limit).all()
 
 

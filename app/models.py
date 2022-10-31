@@ -9,7 +9,7 @@ class ToDo(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     description = Column(String, index=True)
-    is_completed = Column(Boolean, nullable=True)
+    is_completed = Column(Boolean, nullable=True, default=False)
     date_created = Column(Date)
     date_due = Column(Date, nullable=True, index=True)
     date_completed = Column(Date, nullable=True)

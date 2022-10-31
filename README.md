@@ -1,16 +1,17 @@
 # BooDo
-Simple single user to-do application, that provides only API access.
+##Overview & Requirements
+Simple single user to-do application, that provides only API access and in
+early development stages.
 
-CRUD to-dos, get past due to-dos.
+User can perform CRUD operations on multiple todos.
+User can mark todos as done.
+User can get overdue tasks.
 
-Dockerfile included ...
+- /todos/
+- /todos/overdue 
+- /todos/done
+- /todos/{todo_id}
 
-# Endpoints
-
-/todos
-/todos/overdue
-
-
-
-todo
-add versions of api maybe
+# Running the App Locally
+The goal is to run the app in Docker. Make sure you have Docker installed,
+clone this repo, build docker image and run it.
