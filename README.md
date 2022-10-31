@@ -1,5 +1,5 @@
 # BooDo
-##Overview & Requirements
+# Overview
 Simple single user to-do application, that provides only API access and in
 early development stages.
 
