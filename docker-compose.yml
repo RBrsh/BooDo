@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  app:
+    build: ./
+    ports:
+      - 3001:80
+    environment:
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: very_secret_password
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: very_secret_password
+      POSTGRES_DB: boodo_db
+    volumes:
+      - db-data:/var/lib/postgresql/data/
+
+volumes:
+  db-data:
